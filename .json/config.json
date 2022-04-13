@@ -1,0 +1,17 @@
+{
+  "config":
+  {
+    "name": "SearchEngine",
+    "version": "0.1",
+    "max_responses": 5,
+    "time": 5
+  },
+  "files":
+  [
+    "C:\\Users\\Maxim\\CLionProjects\\Search_Engine\\data_base\\file001.txt",
+    "C:\\Users\\Maxim\\CLionProjects\\Search_Engine\\data_base\\file002.txt",
+    "C:\\Users\\Maxim\\CLionProjects\\Search_Engine\\data_base\\file003.txt",
+    "C:\\Users\\Maxim\\CLionProjects\\Search_Engine\\data_base\\file004.txt"
+  ]
+
+}
