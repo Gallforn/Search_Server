@@ -4,6 +4,7 @@
 #include <fstream>
 #include <vector>
 #include <iostream>
+#include <experimental/functional>
 #include "nlohmann/json.hpp"
 #include "ConvertJson.h"
 #include "search_except.h"
@@ -11,7 +12,7 @@
 
 se::ConvertJSON::ConvertJSON()
 {
-    std::ifstream file(L"C:\\Users\\Maxim\\CLionProjects\\Search_Engine\\.json\\config.json", std::ios::app);
+    std::ifstream file("C:\\Users\\Maxim\\CLionProjects\\Search_Engine\\.json\\config.json", std::ios::app);
 
     if(file.fail()) throw se::NoExistFile();
 
@@ -25,7 +26,7 @@ se::ConvertJSON::ConvertJSON()
 
     if(config["config"]["max_responses"] == 0) config["config"]["max_responses"] = 5;
 
-    file.open(L"C:\\Users\\Maxim\\CLionProjects\\Search_Engine\\.json\\requests.json", std::ios::app);
+    file.open("C:\\Users\\Maxim\\CLionProjects\\Search_Engine\\.json\\requests.json", std::ios::app);
 
     if(file.fail()) throw se::NoExistFile();
 
@@ -33,6 +34,25 @@ se::ConvertJSON::ConvertJSON()
 
     file.close();
 
+    //Если список файлов в config.json не заполнен вручную, обходим рекурсивно директорию с файлами(data_base)
+    //Не работает с MinGW
+    /*
+    if(config["files"].empty())
+    {
+        const std::filesystem::recursive_directory_iterator end{};
+        for(std::filesystem::recursive_directory_iterator next(config["data_base"]); next != end; ++next)
+        {
+            try
+            {
+                config["files"].push_back(next->path().string());
+            }
+            catch(const std::filesystem::filesystem_error& exc)
+            {
+                std::cerr << exc.what() << std::endl;
+            }
+        }
+    }
+     */
 }
 
 std::vector<std::string> se::ConvertJSON::GetTextDocuments()
@@ -65,7 +85,7 @@ std::vector<std::string> se::ConvertJSON::GetRequests()
 
 void se::ConvertJSON::putAnswers(std::vector<std::vector<se::RelativeIndex>> ans)
 {
-    std::ofstream file(L"C:\\Users\\Maxim\\CLionProjects\\Search_Engine\\.json\\answers.json");
+    std::ofstream file("C:\\Users\\Maxim\\CLionProjects\\Search_Engine\\.json\\answers.json");
 
     int number{1};
     int responses_limit{GetResponsesLimit()};

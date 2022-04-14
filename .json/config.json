@@ -4,7 +4,8 @@
     "name": "SearchEngine",
     "version": "0.1",
     "max_responses": 5,
-    "time": 5
+    "time": 5,
+    "data_base": "C:\\Users\\Maxim\\CLionProjects\\Search_Engine\\data_base"
   },
   "files":
   [

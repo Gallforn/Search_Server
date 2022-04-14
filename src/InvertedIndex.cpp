@@ -3,6 +3,8 @@
 //
 #include <fstream>
 #include <iostream>
+#include <mutex>
+#include <thread>
 #include "InvertedIndex.h"
 #include "ConvertJson.h"
 
@@ -10,43 +12,86 @@ void se::InvertedIndex::UpdateDocumentBase(std::vector<std::string> input_docs)
 {
     docs.clear();
     freq_dictionary.clear();
+    docs.resize(input_docs.size());
 
-    std::string buffer;
+    __gnu_cxx::__recursive_mutex        docs_locker;
+    std::vector<std::string>::size_type iBeg{0};
+    std::vector<std::string>::size_type iEnd{input_docs.size()};
+    std::thread*                        th_1;
+    std::thread*                        th_2;
+    std::thread*                        th_3;
 
-    for(std::vector<std::string>::size_type iBeg{0}, iEnd{input_docs.size()}; iBeg < iEnd; ++iBeg)
-    {
-        std::ifstream file(input_docs[iBeg], std::ios::app);
+    std::function<void(size_t)> text_extract = [&input_docs, &docs_locker, this](size_t index){
 
-        getline(file, buffer, '\0');
+        std::ifstream file(input_docs[index], std::ios::app);
+        std::string   buffer;
 
-        docs.push_back(buffer);
+        std::getline(file, buffer, '\0');
 
         file.close();
-    }
 
-    indexing();
-}
+        auto it = docs.begin();
 
-void se::InvertedIndex::indexing()
-{
-    std::stringstream ss;
-    std::string buffer;
-    for(std::vector<std::string>::size_type iBeg{0}, iEnd{docs.size()}; iBeg < iEnd; ++iBeg)
-    {
-        ss.clear();
-        ss << docs[iBeg];
+        std::advance(it, index);
+
+        docs_locker.lock();
+        docs.emplace(it, buffer);
+        docs_locker.unlock();
+
+        std::stringstream ss;
+
+
+        ss << docs[index];
+
+
         while(ss >> buffer)
         {
-            if(!freq_dictionary.contains(buffer) || freq_dictionary[buffer][iBeg].doc_id != iBeg)
+            docs_locker.lock();
+            if(freq_dictionary.find(buffer) == freq_dictionary.end() || freq_dictionary[buffer][index].doc_id != index)
             {
-                freq_dictionary[buffer].push_back({iBeg, 1});
+                freq_dictionary[buffer].push_back({index, 1});
             }
             else
             {
-                ++freq_dictionary[buffer][iBeg].count;
+                ++freq_dictionary[buffer][index].count;
             }
+            docs_locker.unlock();
         }
-    }
+    };
+
+    do
+    {
+        if(iBeg < iEnd)
+        {
+            th_1 = new std::thread(text_extract, iBeg);
+            ++iBeg;
+        }
+        if(iBeg < iEnd)
+        {
+            th_2 = new std::thread(text_extract, iBeg);
+            ++iBeg;
+        }
+        if(iBeg < iEnd)
+        {
+            th_3 = new std::thread(text_extract, iBeg);
+            ++iBeg;
+        }
+        if(th_1->joinable())
+        {
+            th_1->join();
+        }
+
+        if(th_2->joinable())
+        {
+            th_2->join();
+        }
+
+        if(th_3->joinable())
+        {
+            th_3->join();
+        }
+
+    }while(iBeg < iEnd || th_1->joinable() || th_2->joinable() || th_3->joinable());
 }
 
 std::vector <se::Entry> se::InvertedIndex::GetWordCount(const std::string &word)

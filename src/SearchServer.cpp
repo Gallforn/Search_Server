@@ -5,6 +5,7 @@
 #include <vector>
 #include <string>
 #include <sstream>
+#include <algorithm>
 #include "SearchServer.h"
 
 
@@ -16,7 +17,7 @@ std::vector<std::vector<se::RelativeIndex>> se::SearchServer::search(const std::
     std::map<size_t, float> rank                        { };
     std::string buffer                                  { };
     size_t req_id                                       {0};
-    size_t maxR                                         {0};
+    float maxR                                          { };
 
     result.resize(queries_input.size());
 
