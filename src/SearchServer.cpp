@@ -11,32 +11,41 @@
 
 std::vector<std::vector<se::RelativeIndex>> se::SearchServer::search(const std::vector<std::string>& queries_input)
 {
+    std::cout << "Starting search..." << std::endl;
+
     std::vector<std::vector<se::RelativeIndex>>  result { };
     std::vector<size_t> rList                           { };
     std::stringstream ss                                { };
     std::map<size_t, float> rank                        { };
     std::string buffer                                  { };
     size_t req_id                                       {0};
-    float maxR                                          { };
 
     result.resize(queries_input.size());
 
     for(auto bIt{queries_input.begin()}, eIt{queries_input.end()}; bIt != eIt; ++bIt, ++req_id)
     {
         rank.clear();
-        maxR = 0;
+        float maxR{0.0f};
         ss.clear();
         ss << *bIt;
 
         while(ss >> buffer)
         {
+            for(size_t buf_idx{0}, buf_size{buffer.size()}; buf_idx < buf_size; ++buf_idx)
+            { //Приводим все заглавные буквы к прописным
+                if(buffer[buf_idx] >= 'A' && buffer[buf_idx] <= 'Z')
+                {
+                    buffer[buf_idx] += 32;
+                }
+            }
+
             std::vector<se::Entry> entry_word = index_.GetWordCount(buffer);
 
             if(!entry_word.empty())
             {
                 for(auto &i : entry_word)
                 {
-                    rank[i.doc_id] += i.count;
+                    rank[i.doc_id] += static_cast<float>(i.count);
                     if(rank[i.doc_id] > maxR)
                     {
                         maxR = rank[i.doc_id];
@@ -70,6 +79,9 @@ std::vector<std::vector<se::RelativeIndex>> se::SearchServer::search(const std::
             }
         }
     }
+
+    std::cout << "Search is over." << std::endl;
+
     return result;
 }
 

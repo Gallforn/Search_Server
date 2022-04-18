@@ -3,6 +3,7 @@
 #include "InvertedIndex.h"
 #include "SearchServer.h"
 
+#ifdef TEST
 template<class T, class U>
 void test(T& class1, U& class2)
 {
@@ -17,6 +18,7 @@ void test(T& class1, U& class2)
         }
     }
 }
+#endif
 
 int main()
 {
@@ -25,7 +27,7 @@ int main()
       se::ConvertJSON cJ;
       se::InvertedIndex iI;
       se::SearchServer sS(iI);
-
+#ifdef TEST
       std::cout << "Testing:" << std::endl;
 
       std::cout << "Test of SearchServer:" << std::endl;
@@ -36,7 +38,8 @@ int main()
       test(sS, cJ);
 
       std::cout << "Test is over." << std::endl;
-
+#endif
+      iI.UpdateDocumentBase(cJ.GetTextDocuments());
       cJ.putAnswers(sS.search(cJ.GetRequests()));
     }
     catch(std::exception& exc)
