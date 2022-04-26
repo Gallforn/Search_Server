@@ -5,14 +5,14 @@
     "version": "0.2",
     "max_responses": 5,
     "time": 5,
-    "data_base": "C:\\Users\\Maxim\\CLionProjects\\Search_Engine\\data_base"
+    "data_base_dir": "C:/Users/Maxim/CLionProjects/Search_Engine/data_base/"
   },
   "files":
   [
-    "C:\\Users\\Maxim\\CLionProjects\\Search_Engine\\data_base\\file001.txt",
-    "C:\\Users\\Maxim\\CLionProjects\\Search_Engine\\data_base\\file002.txt",
-    "C:\\Users\\Maxim\\CLionProjects\\Search_Engine\\data_base\\file003.txt",
-    "C:\\Users\\Maxim\\CLionProjects\\Search_Engine\\data_base\\file004.txt"
+    "file001.txt",
+    "file002.txt",
+    "file003.txt",
+    "file004.txt"
   ]
 
 }

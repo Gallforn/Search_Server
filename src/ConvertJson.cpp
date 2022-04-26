@@ -4,6 +4,7 @@
 #include <fstream>
 #include <vector>
 #include <iostream>
+#include <windows.h>
 #include "nlohmann/json.hpp"
 #include "ConvertJson.h"
 #include "search_except.h"
@@ -13,7 +14,7 @@ se::ConvertJSON::ConvertJSON()
 {
     std::ifstream file("C:/Users/Maxim/CLionProjects/Search_Engine/.json/config.json", std::ios::app);
 
-    if(file.fail()) throw se::NoExistFile();
+    if(file.fail() || !file.is_open()) throw se::NoExistFile();
 
     file >> config;
 
@@ -24,6 +25,26 @@ se::ConvertJSON::ConvertJSON()
     if(config["config"]["version"] != "0.2") throw se::InvalidVersion();
 
     if(config["config"]["max_responses"] == 0) config["config"]["max_responses"] = 5;
+
+    if(config["files"].empty()) //Автопоиск файлов, если они не указаны пользователем, только для Windows
+    {
+        std::string dir = config["config"]["data_base_dir"];
+        dir += "*.txt";
+
+        WIN32_FIND_DATA FindFileData;
+        HANDLE hf;
+
+        hf = FindFirstFile(dir.c_str(), &FindFileData);
+        if(hf != INVALID_HANDLE_VALUE)
+        {
+            do
+            {
+                config["files"].push_back(FindFileData.cFileName);
+            }while(FindNextFile(hf, &FindFileData) != 0);
+
+            FindClose(hf);
+        }
+    }
 
     file.open("C:/Users/Maxim/CLionProjects/Search_Engine/.json/requests.json", std::ios::app);
 
@@ -40,9 +61,13 @@ std::vector<std::string> se::ConvertJSON::GetTextDocuments()
 {
     std::vector<std::string> result;
 
+    std::string prefix = config["config"]["data_base_dir"];
+    prefix.erase(prefix.size() - 1);
+
     for(auto it{config["files"].begin()}, it_end{config["files"].end()}; it != it_end; ++it)
     {
-        result.push_back(*it);
+        std::string suffix = *it;
+        result.push_back(prefix + "/" += suffix);
     }
     return result;
 }

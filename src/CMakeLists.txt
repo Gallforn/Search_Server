@@ -7,10 +7,14 @@ set(JSON_BuildTests OFF CACHE INTERNAL "")
 
 add_executable (Search_Engine main.cpp search_except.cpp ConvertJson.cpp InvertedIndex.cpp SearchServer.cpp)
 
-
 target_include_directories(Search_Engine PUBLIC ../include)
 
 target_link_libraries(Search_Engine PRIVATE nlohmann_json::nlohmann_json)
+
+
+
+
+
 
 
 

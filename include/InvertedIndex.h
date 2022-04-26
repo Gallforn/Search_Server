@@ -24,7 +24,6 @@ namespace se {
         std::vector <Entry> GetWordCount(const std::string &word);
 
     private:
-        std::vector <std::string> docs;
         std::map <std::string, std::vector<Entry>> freq_dictionary;
     };
 }
