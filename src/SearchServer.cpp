@@ -8,6 +8,11 @@
 #include <algorithm>
 #include "SearchServer.h"
 
+se::SearchServer::SearchServer(std::vector<std::string> docs_names) : index_(se::InvertedIndex())
+{
+    index_.UpdateDocumentBase(std::move(docs_names));
+}
+
 
 std::vector<std::vector<se::RelativeIndex>> se::SearchServer::search(const std::vector<std::string>& queries_input)
 {
@@ -75,7 +80,7 @@ std::vector<std::vector<se::RelativeIndex>> se::SearchServer::search(const std::
         {
             for(auto &i : sort_rank)
             {
-                result[req_id].push_back({(int)i.first, i.second});
+                result[req_id].push_back({static_cast<int>(i.first), i.second});
             }
         }
     }

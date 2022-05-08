@@ -1,5 +1,4 @@
 #include <iostream>
-#include <windows.h>
 #include "ConvertJson.h"
 #include "InvertedIndex.h"
 #include "SearchServer.h"
@@ -9,10 +8,8 @@ int main()
     try
     {
       se::ConvertJSON cJ;
-      se::InvertedIndex iI;
-      se::SearchServer sS(iI);
+      se::SearchServer sS(cJ.GetTextDocuments());
 
-      iI.UpdateDocumentBase(cJ.GetTextDocuments());
       cJ.putAnswers(sS.search(cJ.GetRequests()));
     }
     catch(std::exception& exc)

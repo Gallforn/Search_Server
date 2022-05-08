@@ -15,7 +15,8 @@
    a.ConvertJson - конструктор, выгружает информацию из config.json и requests.json.
                   Вызывает исключени EmptyConfig если конфигурация не заполнена 
                   либо отсутствует, InvalidVersion при несовпадении версий и 
-                  NoExistFile если файл не найден;
+                  NoExistFile если файл не найден. Автоматически заполняет пути файлов,
+                  если они не указаны пользователем;
    b.GetResponsesLimit - метод, возвращающий максимальное колличество ответов на запрос(int);
    c.GetRequests - метод, возвращает запросы из файла requests.json(std::vector<std::string>);
    d.putAnswers - метод, выгружает результат работы метода search класса SearchServer в файл answers.json.

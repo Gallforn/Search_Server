@@ -15,11 +15,11 @@ namespace se {
 
     class SearchServer {
     public:
-        SearchServer(InvertedIndex &idx) : index_(idx) {};
+        SearchServer(std::vector<std::string> docs_names);
 
         std::vector<std::vector<RelativeIndex>> search(const std::vector<std::string>& queries_input);
     private:
-        InvertedIndex& index_;
+        InvertedIndex index_;
     };
 }
 

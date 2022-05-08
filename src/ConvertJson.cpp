@@ -50,11 +50,11 @@ se::ConvertJSON::ConvertJSON()
 
     if(file.fail()) throw se::NoExistFile();
 
-    std::cout << "Starting " << config["config"]["name"] << " ver. " << config["config"]["version"] << std::endl;
-
     file >> requests;
 
     file.close();
+
+    std::cout << "Starting " << config["config"]["name"] << " ver. " << config["config"]["version"] << std::endl;
 }
 
 std::vector<std::string> se::ConvertJSON::GetTextDocuments()
@@ -122,7 +122,7 @@ void se::ConvertJSON::putAnswers(std::vector<std::vector<se::RelativeIndex>> ans
 
     }
 
-    file << answers;
+    file << answers.dump(4);
 
     file.close();
 }
