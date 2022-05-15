@@ -32,6 +32,7 @@ void se::InvertedIndex::UpdateDocumentBase(std::vector<std::string> input_docs)
         *is_ready = false;
 
         std::ifstream file(path, std::ios::app);
+
         if(!file.is_open() || file.fail() || file.bad())
         {
             *is_ready = true;
@@ -41,37 +42,44 @@ void se::InvertedIndex::UpdateDocumentBase(std::vector<std::string> input_docs)
             return;
         }
 
-        std::string       buffer;
-        std::stringstream ss;
+        std::string        file_buffer;
 
-        std::getline(file, buffer, '\0');
+        std::getline(file, file_buffer, '\0');
 
         file.close();
 
-        ss << buffer;
+        std::string              word;
+        std::vector<std::string> words;
 
-        buffer.clear();
-
-        while(ss >> buffer)
+        for(auto& fBufIt : file_buffer) //извлечение слов из буфера
         {
-            for(size_t buf_idx{0}, buf_size{buffer.size()}; buf_idx < buf_size; ++buf_idx)
-            { //Приводим все заглавные буквы к прописным, только для ASCII
-                if(buffer[buf_idx] >= 'A' && buffer[buf_idx] <= 'Z')
-                {
-                    buffer[buf_idx] += 32;
-                }
+            if((fBufIt >= 'A' && fBufIt <= 'Z') || (fBufIt >= 'a' && fBufIt <= 'z'))
+            {
+                word += fBufIt;
             }
+            else if(!word.empty())
+            {
+                words.push_back(word);
+                word.clear();
+            }
+        }
 
-            access_locker.lock();
-            if(freq_dictionary.find(buffer) == freq_dictionary.end() || freq_dictionary[buffer][index].doc_id != index)
-            {
-                freq_dictionary[buffer].push_back({index, 1});
-            }
-            else
-            {
-                ++freq_dictionary[buffer][index].count;
-            }
-            access_locker.unlock();
+        for(auto& wordsIt : words)
+        {
+                for (auto &wordsItIt: wordsIt) { //Приводим все заглавные буквы к прописным, только для ASCII
+                    if (wordsItIt >= 'A' && wordsItIt <= 'Z') {
+                        wordsItIt += 32;
+                    }
+                }
+
+                access_locker.lock();
+                if (freq_dictionary.find(wordsIt) == freq_dictionary.end() ||
+                    freq_dictionary[wordsIt][index].doc_id != index) {
+                    freq_dictionary[wordsIt].push_back({index, 1});
+                } else {
+                    ++freq_dictionary[wordsIt][index].count;
+                }
+                access_locker.unlock();
         }
 
         *is_ready = true;
