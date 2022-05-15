@@ -1,10 +1,12 @@
 #include <iostream>
+#include <chrono>
 #include "ConvertJson.h"
 #include "InvertedIndex.h"
 #include "SearchServer.h"
 
 int main()
 {
+    auto begin = std::chrono::steady_clock::now();
     try
     {
       se::ConvertJSON cJ;
@@ -17,6 +19,11 @@ int main()
         std::cerr << exc.what() << std::endl;
         return 1;
     }
+    auto end = std::chrono::steady_clock::now();
+
+    auto res = std::chrono::duration_cast<std::chrono::milliseconds>(end - begin);
+
+    std::cout << "Duration " << res.count() << " ms" << std::endl;
 
     return 0;
 }

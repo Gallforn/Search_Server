@@ -42,44 +42,39 @@ void se::InvertedIndex::UpdateDocumentBase(std::vector<std::string> input_docs)
             return;
         }
 
-        std::string        file_buffer;
+        std::string              file_buffer; //текст из файла
+        std::string              word;        //буфер для слов из file_buffer
 
         std::getline(file, file_buffer, '\0');
 
         file.close();
 
-        std::string              word;
-        std::vector<std::string> words;
-
-        for(auto& fBufIt : file_buffer) //извлечение слов из буфера
+        for(auto& fBufIt : file_buffer)
         {
-            if((fBufIt >= 'A' && fBufIt <= 'Z') || (fBufIt >= 'a' && fBufIt <= 'z'))
+            if(fBufIt >= 'a' && fBufIt <= 'z')
             {
+                word += fBufIt;
+            }
+            else if(fBufIt >= 'A' && fBufIt <= 'Z') //Приводим все заглавные буквы к прописным, только для ASCII
+            {
+                fBufIt += 32;
                 word += fBufIt;
             }
             else if(!word.empty())
             {
-                words.push_back(word);
-                word.clear();
-            }
-        }
-
-        for(auto& wordsIt : words)
-        {
-                for (auto &wordsItIt: wordsIt) { //Приводим все заглавные буквы к прописным, только для ASCII
-                    if (wordsItIt >= 'A' && wordsItIt <= 'Z') {
-                        wordsItIt += 32;
-                    }
-                }
-
                 access_locker.lock();
-                if (freq_dictionary.find(wordsIt) == freq_dictionary.end() ||
-                    freq_dictionary[wordsIt][index].doc_id != index) {
-                    freq_dictionary[wordsIt].push_back({index, 1});
-                } else {
-                    ++freq_dictionary[wordsIt][index].count;
+                if (freq_dictionary.find(word) == freq_dictionary.end() || freq_dictionary[word][index].doc_id != index)
+                {
+                    freq_dictionary[word].push_back({index, 1});
+                }
+                else
+                {
+                    ++freq_dictionary[word][index].count;
                 }
                 access_locker.unlock();
+
+                word.clear();
+            }
         }
 
         *is_ready = true;
@@ -99,6 +94,7 @@ void se::InvertedIndex::UpdateDocumentBase(std::vector<std::string> input_docs)
                 std::cerr << exc.what() << std::endl;
                 --input_docs_index;
             }
+
         }
 
         if(input_docs_index < input_docs_size && *th_2_ready)
