@@ -11,21 +11,21 @@ namespace se
     {
     public:
         EmptyConfig() = default;
-        const char* what()  const noexcept override;
+        [[nodiscard]] const char* what()  const noexcept override;
     };
 
     class InvalidVersion : public std::exception
     {
     public:
         InvalidVersion() = default;
-        const char* what() const noexcept override;
+        [[nodiscard]] const char* what() const noexcept override;
     };
 
     class NoExistFile : public std::exception
     {
     public:
         NoExistFile() = default;
-        const char* what() const noexcept override;
+        [[nodiscard]] const char* what() const noexcept override;
     };
 
 }

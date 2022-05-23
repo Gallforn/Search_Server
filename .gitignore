@@ -1,4 +1,4 @@
 ###ignored###
-data_base/*.txt
 cmake-build-debug
+.idea
 

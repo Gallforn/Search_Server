@@ -2,17 +2,15 @@
   "config":
   {
     "name": "SearchEngine",
-    "version": "0.2",
+    "version": "0.4",
     "max_responses": 5,
     "time": 5,
-    "data_base_dir": "C:/Users/Maxim/CLionProjects/Search_Engine/data_base/"
+    "data_base_dir": "../../data_base/"
   },
   "files":
   [
     "file001.txt",
-    "file002.txt",
-    "file003.txt",
-    "file004.txt"
+    "file002.txt"
   ]
 
 }

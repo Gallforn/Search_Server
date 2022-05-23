@@ -4,15 +4,14 @@
 #include <fstream>
 #include <vector>
 #include <iostream>
-#include <windows.h>
-#include "nlohmann/json.hpp"
+#include "json.hpp"
 #include "ConvertJson.h"
 #include "search_except.h"
 #include "SearchServer.h"
 
 se::ConvertJSON::ConvertJSON()
 {
-    std::ifstream file("C:/Users/Maxim/CLionProjects/Search_Engine/.json/config.json", std::ios::app);
+    std::ifstream file("../../.json/config.json", std::ios::app);
 
     if(file.fail() || !file.is_open()) throw se::NoExistFile();
 
@@ -22,31 +21,11 @@ se::ConvertJSON::ConvertJSON()
 
     if(config["config"].empty()) throw se::EmptyConfig();
 
-    if(config["config"]["version"] != "0.2") throw se::InvalidVersion();
+    if(config["config"]["version"] != "0.4") throw se::InvalidVersion();
 
     if(config["config"]["max_responses"] == 0) config["config"]["max_responses"] = 5;
 
-    if(config["files"].empty()) //Автопоиск файлов, если они не указаны пользователем, только для Windows
-    {
-        std::string dir = config["config"]["data_base_dir"];
-        dir += "*.txt";
-
-        WIN32_FIND_DATA FindFileData;
-        HANDLE hf;
-
-        hf = FindFirstFile(dir.c_str(), &FindFileData);
-        if(hf != INVALID_HANDLE_VALUE)
-        {
-            do
-            {
-                config["files"].push_back(FindFileData.cFileName);
-            }while(FindNextFile(hf, &FindFileData) != 0);
-
-            FindClose(hf);
-        }
-    }
-
-    file.open("C:/Users/Maxim/CLionProjects/Search_Engine/.json/requests.json", std::ios::app);
+    file.open("../../.json/requests.json", std::ios::app);
 
     if(file.fail()) throw se::NoExistFile();
 
@@ -57,7 +36,7 @@ se::ConvertJSON::ConvertJSON()
     std::cout << "Starting " << config["config"]["name"] << " ver. " << config["config"]["version"] << std::endl;
 }
 
-std::vector<std::string> se::ConvertJSON::GetTextDocuments()
+std::vector<std::string> se::ConvertJSON::GetNamesDocuments()
 {
     std::vector<std::string> result;
 
@@ -79,19 +58,12 @@ int se::ConvertJSON::GetResponsesLimit()
 
 std::vector<std::string> se::ConvertJSON::GetRequests()
 {
-    std::vector<std::string> result;
-
-    for(auto bIt{requests["requests"].begin()}, eIt{requests["requests"].end()}; bIt != eIt; ++bIt)
-    {
-        result.push_back(*bIt);
-    }
-
-    return result;
+    return requests["requests"];
 }
 
 void se::ConvertJSON::putAnswers(std::vector<std::vector<se::RelativeIndex>> ans)
 {
-    std::ofstream file("C:/Users/Maxim/CLionProjects/Search_Engine/.json/answers.json");
+    std::ofstream file("../../.json/answers.json");
 
     int number{1};
     int responses_limit{GetResponsesLimit()};

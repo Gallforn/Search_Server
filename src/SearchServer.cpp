@@ -18,12 +18,12 @@ std::vector<std::vector<se::RelativeIndex>> se::SearchServer::search(const std::
 {
     std::cout << "Starting search..." << std::endl;
 
-    std::vector<std::vector<se::RelativeIndex>>  result { };
-    std::vector<size_t> rList                           { };
-    std::stringstream ss                                { };
-    std::map<size_t, float> rank                        { };
-    std::string buffer                                  { };
-    size_t req_id                                       {0};
+    std::vector<std::vector<se::RelativeIndex>>  result { }; //результат, возвращаемый из метода
+    std::stringstream ss                                { }; //строковый поток для извлечения отдельных слов из запроса
+    std::map<size_t, float> rank                        { }; //класс для хранения абс. релевантности для каждого док-та
+                                                             //обрабатываемого запроса
+    std::string buffer                                  { }; //строка буффер для извлечения слов запроса из ss
+    size_t req_id                                       {0}; //номер запроса
 
     result.resize(queries_input.size());
 
@@ -59,7 +59,7 @@ std::vector<std::vector<se::RelativeIndex>> se::SearchServer::search(const std::
             }
         }
 
-        std::vector<std::pair<size_t, float>> sort_rank;
+        std::vector<std::pair<size_t, float>> sort_rank; //вектор для сортировки пар из класса rank
 
         for(auto &i : rank)
         {
@@ -69,12 +69,16 @@ std::vector<std::vector<se::RelativeIndex>> se::SearchServer::search(const std::
 
         std::sort(sort_rank.begin(), sort_rank.end(), [](std::pair<size_t, float> &a, std::pair<size_t, float> &b)
         {
-            return a.second > b.second;
+            if(a.second == b.second)
+            {
+                return a.first < b.first;
+            }
+            else return a.second > b.second;
         });
 
         if(sort_rank.empty())
         {
-            result[req_id].push_back({0, 0});
+            result[req_id].push_back({});
         }
         else
         {
