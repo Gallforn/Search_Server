@@ -25,11 +25,17 @@ void se::InvertedIndex::UpdateDocumentBase(std::vector<std::string> docsNames)
 
         std::ifstream file(path, std::ios::app);
 
-        [[unlikely]]if(!file.is_open() || file.fail() || file.bad())
+        if(!file.is_open() || file.fail() || file.bad())
         {
             accessLocker.lock();
             std::cerr << "Error opening " << path << " file!" << std::endl;
             accessLocker.unlock();
+
+            if(index == docNamesCount)
+            {
+                *threadIsOver = true;
+            }
+
             return;
         }
 
@@ -67,7 +73,7 @@ void se::InvertedIndex::UpdateDocumentBase(std::vector<std::string> docsNames)
             }
         }
 
-        [[unlikely]]if(index == docNamesCount)
+        if(index == docNamesCount)
         {
             *threadIsOver = true;
         }
@@ -75,17 +81,9 @@ void se::InvertedIndex::UpdateDocumentBase(std::vector<std::string> docsNames)
 
     for(size_t input_docs_index{0}, input_docs_size{docsNames.size()}; input_docs_index < input_docs_size; ++input_docs_index)
     {
-        try
-        {
-            std::thread th(textExt, std::move(docsNames[input_docs_index]), input_docs_index, input_docs_size - 1);
+        std::thread th(textExt, std::move(docsNames[input_docs_index]), input_docs_index, input_docs_size - 1);
 
-            th.detach();
-        }
-        catch(std::exception& exc)
-        {
-            std::cerr << exc.what() << std::endl;
-            --input_docs_index;
-        }
+        th.detach();
     }
 
     while(!*threadIsOver)

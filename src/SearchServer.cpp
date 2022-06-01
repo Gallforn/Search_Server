@@ -25,6 +25,13 @@ std::vector<std::vector<se::RelativeIndex>> se::SearchServer::search(const std::
     std::string buffer                                  { }; //строка буффер для извлечения слов запроса из ss
     size_t req_id                                       {0}; //номер запроса
 
+    if(index_.freq_dictionary.empty())
+    {
+        std::cerr << "Frequency dictionary is empty! Search impossible!" << std::endl;
+        std::cerr << R"(Please check file config.json -> fields: "data_base_dir" & "files" for correctness.)" << std::endl;
+        return result;
+    }
+
     result.resize(queries_input.size());
 
     for(auto bIt{queries_input.begin()}, eIt{queries_input.end()}; bIt != eIt; ++bIt, ++req_id)
