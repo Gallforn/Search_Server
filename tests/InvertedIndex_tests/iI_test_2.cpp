@@ -16,17 +16,21 @@ void TestInvertedIndexFunctionality(const std::vector<std::string>& docs, const 
     ASSERT_EQ(result, expected);
 }
 
-TEST(TestCaseInvertedIndex, TestInvertedIndexMissingWord) {
+TEST(TestCaseInvertedIndex, TestBasic2) {
 const std::vector<std::string> docs = {
-        "../../../../data_base/test_iI_3/file001.txt",
-        "../../../../data_base/test_iI_3/file002.txt"
+        "../../../data_base/test_iI_2/file001.txt",
+        "../../../data_base/test_iI_2/file002.txt",
+        "../../../data_base/test_iI_2/file003.txt",
+        "../../../data_base/test_iI_2/file004.txt"
 };
-const std::vector<std::string> requests = {"m", "statement"};
+const std::vector<std::string> requests = {"milk", "water", "cappuchino"};
 const std::vector<std::vector<se::Entry>> expected = {
         {
-
+                {0, 4}, {1, 1}, {2, 5}
         }, {
-                {1, 1}
+                {0, 3}, {1, 2}, {2, 5}
+        }, {
+                {3, 1}
         }
 };
 TestInvertedIndexFunctionality(docs, requests, expected);

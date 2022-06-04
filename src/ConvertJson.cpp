@@ -41,12 +41,11 @@ std::vector<std::string> se::ConvertJSON::GetNamesDocuments()
     std::vector<std::string> result;
 
     std::string prefix = config["config"]["data_base_dir"];
-    prefix.erase(prefix.size() - 1);
+    //prefix.erase(prefix.size() - 1);
 
-    for(auto it{config["files"].begin()}, it_end{config["files"].end()}; it != it_end; ++it)
+    for(auto& it : config["files"])
     {
-        std::string suffix = *it;
-        result.push_back(prefix + "/" += suffix);
+        result.push_back(prefix + "/" += it);
     }
     return result;
 }
