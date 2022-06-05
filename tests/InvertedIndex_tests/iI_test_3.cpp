@@ -30,4 +30,6 @@ const std::vector<std::vector<se::Entry>> expected = {
         }
 };
 TestInvertedIndexFunctionality(docs, requests, expected);
+
+system("pause");
 }

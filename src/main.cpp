@@ -17,6 +17,7 @@ int main()
     catch(std::exception& exc)
     {
         std::cerr << exc.what() << std::endl;
+        system("pause");
         return 1;
     }
     auto end = std::chrono::steady_clock::now();
@@ -25,6 +26,7 @@ int main()
 
     std::cout << "Duration " << res.count() << " ms" << std::endl;
 
+    system("pause");
     return 0;
 }
 

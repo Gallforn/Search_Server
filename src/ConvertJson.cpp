@@ -41,7 +41,6 @@ std::vector<std::string> se::ConvertJSON::GetNamesDocuments()
     std::vector<std::string> result;
 
     std::string prefix = config["config"]["data_base_dir"];
-    //prefix.erase(prefix.size() - 1);
 
     for(auto& it : config["files"])
     {

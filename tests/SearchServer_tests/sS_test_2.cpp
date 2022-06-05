@@ -42,4 +42,6 @@ std::vector<std::vector<se::RelativeIndex>> result = srv.search(request);
 result[0].resize(5);
 
 ASSERT_EQ(result, expected);
+
+system("pause");
 }

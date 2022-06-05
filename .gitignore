@@ -1,4 +1,6 @@
 ###ignored###
 cmake-build-debug
 .idea
+_deps
+se_release
 
