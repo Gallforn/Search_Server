@@ -43,5 +43,5 @@ result[0].resize(5);
 
 ASSERT_EQ(result, expected);
 
-system("pause");
+system("pause"); //пауза, необходима при запуске .exe файла теста
 }

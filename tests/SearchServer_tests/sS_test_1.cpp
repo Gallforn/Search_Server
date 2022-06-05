@@ -25,5 +25,5 @@ std::vector<std::vector<se::RelativeIndex>> result = srv.search(request);
 
 ASSERT_EQ(result, expected);
 
-system("pause");
+system("pause"); //пауза, необходима при запуске .exe файла теста
 }

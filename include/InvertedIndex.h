@@ -29,11 +29,11 @@ namespace se {
                                                                       //1 поток - 1 файл
         std::vector <Entry> GetWordCount(const std::string &word);    //Возвращает все вхождения слова word во все
                                                                       //документы
-    public:
-        std::map <std::string, std::vector<Entry>> freq_dictionary;   //Частотный словарь, для каждого слова хранит
-    };                                                                //id документа и количество данных слов в нем
+        bool empty();                                                 //Метод для проверки отсутствия элементов в freq_dictionary
 
-    void textExtract(std::string, size_t, std::atomic<int>*, se::InvertedIndex*);    //Функция для выполнения в потоках
+    private:
+        std::map <std::string, std::vector<Entry>> freq_dictionary;   //Частотный словарь, для каждого слова хранит
+    };                                                                                 //id документа и количество данных слов в нем
 }
 
 #endif //SEARCH_ENGINE_INVERTEDINDEX_H

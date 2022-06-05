@@ -14,8 +14,6 @@ void se::InvertedIndex::UpdateDocumentBase(std::vector<std::string> docsNames)
 {
     std::cout << "Start update document base..." << std::endl;
 
-    freq_dictionary.clear();
-
     std::mutex accessLocker;                                        //ограничение доступа к freq_dictionary
 
     auto threadIsOver = std::make_unique<std::atomic<bool>>(false); //атомарный флаг завершения потоков
@@ -104,5 +102,11 @@ std::vector <se::Entry> se::InvertedIndex::GetWordCount(const std::string &word)
     }
 
     return result;
+}
+
+bool se::InvertedIndex::empty()
+{
+    if(freq_dictionary.empty()) return true;
+    else return false;
 }
 
