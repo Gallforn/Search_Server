@@ -14,6 +14,7 @@ CMake можно скачать по адресу: http://www.cmake.org/
 
 Для сборки проекта используйте компилятор MinGW 8.1.0.
 
+
 Сборка(в командной строке):
 ------------------------
 1. cmake -G "MinGW Makefiles" -DCMAKE_BUILD_TYPE=Release "путь к папке с корневым файлом
@@ -31,39 +32,67 @@ CMake можно скачать по адресу: http://www.cmake.org/
 Краткое описание:
 ------------------------
 Используется для обработки и сохранения информации из json файлов.
+
 Для реализации был использован класс nlohmann::json доступный по
 адресу: https://github.com/nlohmann/json.
 
 1.Приватные поля:
 -----------------------
-1. nlohmann::json config -
+1. **nlohmann::json config** -
 хранение конфигурации приложения и пути к файлам с информацией из файла config.json;
 
-2. nlohmann::json requests -
+2. **nlohmann::json requests** -
 хранение пользвательских запросов из файла requests.json;
 
-3. nlohmann::json answers -
+3. **nlohmann::json answers** -
 хранение резултатов поиска по запросам.
 ***
 2.Методы:
 -----------------------
-1. ConvertJson -
+1. **ConvertJson** -
 конструктор, выгружает информацию из config.json и requests.json.
 Вызывает исключени EmptyConfig если конфигурация не заполнена
 либо отсутствует, InvalidVersion при несовпадении версий и
 NoExistFile если файл не найден;
 
-2. GetResponsesLimit -
+2. **GetResponsesLimit** -
 метод, возвращающий максимальное колличество ответов на запрос(int);
 
-3. GetRequests -
+3. **GetRequests** -
 метод, возвращает запросы из файла requests.json(std::vector<<std::string>>);
 
-4. putAnswers -
+4. **putAnswers** - метод, выгружает результат работы метода search класса SearchServer в файл answers.json.
+                
+ 1.Приватные поля:
+ -----------------------
+   1. **nlohmann::json config** - 
+хранение конфигурации приложения и пути к файлам с информацией из файла config.json;
+   2. **nlohmann::json requests** - 
+хранение пользвательских запросов из файла requests.json;
+   3. **nlohmann::json answers** - 
+хранение резултатов поиска по запросам.
+
+ 2.Методы:
+ -----------------------
+   1. **ConvertJson** -
+конструктор, выгружает информацию из config.json и requests.json.
+Вызывает исключени EmptyConfig если конфигурация не заполнена 
+либо отсутствует, InvalidVersion при несовпадении версий и 
+NoExistFile если файл не найден. Автоматически заполняет пути файлов,
+если они не указаны пользователем(только для Windows);
+
+   2. **GetResponsesLimit** - 
+метод, возвращающий максимальное колличество ответов на запрос(int);
+
+   3. **GetRequests** -
+метод, возвращает запросы из файла requests.json(std::vector<<std::string>>);
+
+   4.**putAnswers** -
 метод, выгружает результат работы метода search класса SearchServer в файл answers.json.
 
 Класс InvertedIndex:
 ========================
+
 Краткое описание:
 ------------------------
 Используется для извлечения слов из документов базы данных и их последующей индексации.
@@ -74,13 +103,13 @@ NoExistFile если файл не найден;
 словарь, хранящий слова, как ключи, и вектор структур Entry, в которых содержатся
 номер документа и количество слова, содержащегося в ключе.
 ***
-2.Методы:
+ 2.Методы:
 ------------------------
-1. **UpdateDocumentBase** -
+   1. UpdateDocumentBase -
 обновляет словарь freq_dictionary,
 принимает на вход список документов для индексации(std::vector<<std::string>>);
 
-2. **GetWordCount** -
+   2. GetWordCount -
 возвращает вектор структур Entry(std::vector<<se::Entry>>) для заданного слова. Принимает
 слово для поиска(std::string)
 
@@ -95,12 +124,12 @@ NoExistFile если файл не найден;
 1.**index_** -
 экземпляр класса InvertedIndex.
 ***
-2.Методы:
-------------------------
-1.**SearchServer** -
+ 2.Методы:
+ ------------------------
+   1.**SearchServer** - 
 конструктор, принимает ссылку на класс InvertedIndex, инициализирует поле index_;
 
-2.**search** -
+   2.search -
 возвращает std::vector<std::vector<RelativeIndex>>, где RelativeIndex - структура, содержащая
 поля doc_id_(номер документа) и rank_(релевантность запроса). Принимает список запросов из файла
 requests.json(const std::vector<<std::string>>& queries_input).
