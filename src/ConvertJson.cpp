@@ -11,7 +11,7 @@
 
 se::ConvertJSON::ConvertJSON()
 {
-    std::ifstream file("../../.json/config.json", std::ios::app);
+    std::ifstream file("../../.json/config.json", std::ios::in);
 
     if(file.fail() || !file.is_open()) throw se::NoExistFile();
 
@@ -25,7 +25,7 @@ se::ConvertJSON::ConvertJSON()
 
     if(config["config"]["max_responses"] == 0) config["config"]["max_responses"] = 5;
 
-    file.open("../../.json/requests.json", std::ios::app);
+    file.open("../../.json/requests.json", std::ios::in);
 
     if(file.fail()) throw se::NoExistFile();
 
@@ -44,7 +44,7 @@ std::vector<std::string> se::ConvertJSON::GetNamesDocuments()
 
     for(auto& it : config["files"])
     {
-        result.push_back(prefix + "/" += it);
+        result.push_back(prefix + static_cast<std::string>(it));
     }
     return result;
 }
@@ -61,8 +61,6 @@ std::vector<std::string> se::ConvertJSON::GetRequests()
 
 void se::ConvertJSON::putAnswers(std::vector<std::vector<se::RelativeIndex>> ans)
 {
-    std::ofstream file("../../.json/answers.json");
-
     int number{1};
     int responses_limit{GetResponsesLimit()};
 
@@ -91,6 +89,8 @@ void se::ConvertJSON::putAnswers(std::vector<std::vector<se::RelativeIndex>> ans
         }
 
     }
+
+    std::ofstream file("../../.json/answers.json");
 
     file << answers.dump(4);
 

@@ -17,6 +17,19 @@
                 ]
             ],
             "result": true
+        },
+        "request3": {
+            "relevance": [
+                [
+                    0,
+                    1.0
+                ],
+                [
+                    1,
+                    1.0
+                ]
+            ],
+            "result": true
         }
     }
 }

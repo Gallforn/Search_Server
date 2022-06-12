@@ -15,16 +15,16 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(googletest)
 enable_testing()
 
-add_executable (sS_test_1 sS_test_1.cpp ../../src/InvertedIndex.cpp ../../src/SearchServer.cpp)
-add_executable (sS_test_2 sS_test_2.cpp ../../src/InvertedIndex.cpp ../../src/SearchServer.cpp)
+add_executable (Search_Server_Simple_Test Search_Server_Simple_Test.cpp ../../src/InvertedIndex.cpp ../../src/SearchServer.cpp)
+add_executable (Search_Server_Top_5_Test Search_Server_Top_5_Test.cpp ../../src/InvertedIndex.cpp ../../src/SearchServer.cpp)
 
-target_include_directories(sS_test_1 PUBLIC ../../include)
-target_include_directories(sS_test_2 PUBLIC ../../include)
+target_include_directories(Search_Server_Simple_Test PUBLIC ../../include)
+target_include_directories(Search_Server_Top_5_Test PUBLIC ../../include)
 
 include_directories(${gtest_SOURCE_DIR}/include ${gtest_SOURCE_DIR})
 
-target_link_libraries(sS_test_1 PRIVATE gtest_main)
-target_link_libraries(sS_test_2 PRIVATE gtest_main)
+target_link_libraries(Search_Server_Simple_Test PRIVATE gtest_main)
+target_link_libraries(Search_Server_Top_5_Test PRIVATE gtest_main)
 include(GoogleTest)
-gtest_discover_tests(sS_test_1)
-gtest_discover_tests(sS_test_2)
+gtest_discover_tests(Search_Server_Simple_Test)
+gtest_discover_tests(Search_Server_Top_5_Test)

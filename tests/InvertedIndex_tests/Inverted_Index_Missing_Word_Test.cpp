@@ -31,5 +31,6 @@ const std::vector<std::vector<se::Entry>> expected = {
 };
 TestInvertedIndexFunctionality(docs, requests, expected);
 
-system("pause"); //пауза, необходима при запуске .exe файла теста
+    std::cout << "Press Enter to continue..." << std::endl;
+    std::cin.get();
 }

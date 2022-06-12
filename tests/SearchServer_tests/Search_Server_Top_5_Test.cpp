@@ -43,5 +43,6 @@ result[0].resize(5);
 
 ASSERT_EQ(result, expected);
 
-system("pause"); //пауза, необходима при запуске .exe файла теста
+    std::cout << "Press Enter to continue..." << std::endl;
+    std::cin.get();
 }

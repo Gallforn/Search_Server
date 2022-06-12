@@ -21,7 +21,7 @@ void se::InvertedIndex::UpdateDocumentBase(std::vector<std::string> docsNames)
     std::function<void(std::string, size_t, size_t)> textExt = [this, &threadIsOver, &accessLocker]
             (std::string&& path, size_t index, size_t docNamesCount){
 
-        std::ifstream file(path, std::ios::app);
+        std::ifstream file(path, std::ios::in);
 
         if(!file.is_open() || file.fail() || file.bad())
         {

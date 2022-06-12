@@ -8,7 +8,6 @@
 #include <vector>
 #include <map>
 #include <string>
-#include <atomic>
 
 namespace se {
     struct Entry {                                                    //Структура для хранения номера документа
