@@ -78,11 +78,11 @@ void se::ConvertJSON::putAnswers(std::vector<std::vector<se::RelativeIndex>> ans
 
                 if(ans[iBeg].size() > 1)
                 {
-                    answers["answers"]["request" + std::to_string(number)]["relevance"].push_back({ans[iBeg][jBeg].doc_id_, ans[iBeg][jBeg].rank_});
+                    answers["answers"]["request" + std::to_string(number)]["relevance"].push_back({ans[iBeg][jBeg].filePath, ans[iBeg][jBeg].rank_});
                 }
                 else
                 {
-                    answers["answers"]["request" + std::to_string(number)]["doc_id"] = ans[iBeg][jBeg].doc_id_;
+                    answers["answers"]["request" + std::to_string(number)]["doc_id"] = ans[iBeg][jBeg].filePath;
                     answers["answers"]["request" + std::to_string(number)]["rank"] = ans[iBeg][jBeg].rank_;
                 }
             }

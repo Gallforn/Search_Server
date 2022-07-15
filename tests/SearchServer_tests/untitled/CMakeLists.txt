@@ -1,13 +1,11 @@
 cmake_minimum_required(VERSION 3.20)
-project(Search_Engine)
-set (CMAKE_CXX_STANDARD 20)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
+project(untitled)
 
+set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
 
-set(CMAKE_PREFIX_PATH "C:\\Users\\Maxim\\Desktop\\Programming\\Qt\\5.15.2\\mingw81_64\\lib\\cmake")
 
 find_package(Qt5 COMPONENTS
         Core
@@ -15,9 +13,8 @@ find_package(Qt5 COMPONENTS
         Widgets
         REQUIRED)
 
-add_executable (Search_Engine main.cpp search_except.cpp ConvertJson.cpp InvertedIndex.cpp SearchServer.cpp MainWindow.h UI.ui ImplSearchClasses.cpp)
-
-target_link_libraries(Search_Engine
+add_executable(untitled main.cpp)
+target_link_libraries(untitled
         Qt5::Core
         Qt5::Gui
         Qt5::Widgets
@@ -49,19 +46,3 @@ if (WIN32)
                 "$<TARGET_FILE_DIR:${PROJECT_NAME}>")
     endforeach (QT_LIB)
 endif ()
-
-target_include_directories(Search_Engine PUBLIC ../include)
-
-
-
-
-
-
-
-
-
-
-
-
-
-

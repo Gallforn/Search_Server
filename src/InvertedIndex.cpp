@@ -8,17 +8,22 @@
 #include <exception>
 #include <atomic>
 #include <functional>
+#include <QString>
 #include "InvertedIndex.h"
+#include "MainWindow.h"
+#include "ui_UI.h"
 
-void se::InvertedIndex::UpdateDocumentBase(std::vector<std::string> docsNames)
+void se::InvertedIndex::UpdateDocumentBase(std::vector<std::string> docsNames, Ui::MainWindow* mW)
 {
-    std::cout << "Start update document base..." << std::endl;
+    MainWindow::logger("Start update document base...", mW);
+
+    freq_dictionary.clear();
 
     std::mutex accessLocker;                                        //ограничение доступа к freq_dictionary
 
     auto threadIsOver = std::make_unique<std::atomic<bool>>(false); //атомарный флаг завершения потоков
 
-    std::function<void(std::string, size_t, size_t)> textExt = [this, &threadIsOver, &accessLocker]
+    std::function<void(std::string, size_t, size_t)> textExt = [this, &threadIsOver, &accessLocker, mW]
             (std::string&& path, size_t index, size_t docNamesCount){
 
         std::ifstream file(path, std::ios::in);
@@ -26,7 +31,7 @@ void se::InvertedIndex::UpdateDocumentBase(std::vector<std::string> docsNames)
         if(!file.is_open() || file.fail() || file.bad())
         {
             accessLocker.lock();
-            std::cerr << "Error opening " << path << " file!" << std::endl;
+            MainWindow::logger("Error opening file: " + static_cast<QString>(path.c_str()), mW);
             accessLocker.unlock();
 
             if(index == docNamesCount)
@@ -59,9 +64,9 @@ void se::InvertedIndex::UpdateDocumentBase(std::vector<std::string> docsNames)
                (!word.empty() && fBufIt == fBufEnd - 1))
             {
                 std::lock_guard<std::mutex> accessGuard(accessLocker);
-                if (freq_dictionary.find(word) == freq_dictionary.end() || freq_dictionary[word][index].doc_id != index)
+                if (freq_dictionary.find(word) == freq_dictionary.end() || freq_dictionary[word][index].filePath != path)
                 {
-                    freq_dictionary[word].push_back({index, 1});
+                    freq_dictionary[word].push_back({path, 1});
                 }
                 else
                 {
@@ -89,24 +94,17 @@ void se::InvertedIndex::UpdateDocumentBase(std::vector<std::string> docsNames)
         std::this_thread::sleep_for(std::chrono::milliseconds(1));
     }
 
-    std::cout << "Update document base is over." << std::endl;
+    MainWindow::logger("Update document base is over.", mW);
+
 }
 
 std::vector <se::Entry> se::InvertedIndex::GetWordCount(const std::string &word)
 {
-    std::vector<Entry> result;
-
-    for(size_t iBeg{0}, iEnd{freq_dictionary[word].size()}; iBeg < iEnd; ++iBeg)
-    {
-        result.push_back(freq_dictionary[word][iBeg]);
-    }
-
-    return result;
+    return freq_dictionary[word];
 }
 
 bool se::InvertedIndex::empty()
 {
-    if(freq_dictionary.empty()) return true;
-    else return false;
+    return freq_dictionary.empty();
 }
 

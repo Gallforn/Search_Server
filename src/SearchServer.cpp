@@ -1,104 +1,106 @@
 //
 // Created by Maxim on 02.04.2022.
 //
-#include <iostream>
 #include <vector>
 #include <string>
 #include <sstream>
 #include <algorithm>
 #include "SearchServer.h"
+#include "MainWindow.h"
+#include "ui_UI.h"
 
-se::SearchServer::SearchServer(std::vector<std::string> docs_names) : index_(se::InvertedIndex())
+void se::SearchServer::search(const std::string& queries_input, Ui::MainWindow* mW)
 {
-    index_.UpdateDocumentBase(std::move(docs_names));
-}
+    if(queries_input.empty())
+    {
+        MainWindow::logger("Specify empty query!", mW);
+        return;
+    }
 
+    MainWindow::logger("Starting search...", mW);
 
-std::vector<std::vector<se::RelativeIndex>> se::SearchServer::search(const std::vector<std::string>& queries_input)
-{
-    std::cout << "Starting search..." << std::endl;
-
-    std::vector<std::vector<se::RelativeIndex>>  result { }; //результат, возвращаемый из метода
-    std::stringstream ss                                { }; //строковый поток для извлечения отдельных слов из запроса
-    std::map<size_t, float> rank                        { }; //класс для хранения абс. релевантности для каждого док-та
+    std::map<std::string, float>    rank{ };                 //класс для хранения абс. релевантности для каждого док-та
                                                              //обрабатываемого запроса
-    std::string buffer                                  { }; //строка буффер для извлечения слов запроса из ss
-    size_t req_id                                       {0}; //номер запроса
+    float                           maxR{0.0f};
 
     if(index_.empty())
     {
-        std::cerr << "Frequency dictionary is empty! Search impossible!" << std::endl;
-        std::cerr << R"(Please check file config.json -> fields: "data_base_dir" & "files" for correctness.)" << std::endl;
-        return result;
+        MainWindow::logger("Frequency dictionary is empty! Search impossible!", mW);
+        MainWindow::logger("Please check file config.json -> fields: \"data_base_dir\" & \"files\" for correctness.)", mW);
+
+        return;
     }
 
-    result.resize(queries_input.size());
+    std::vector<std::string> queries_words; //Слова из запроса
+    std::string              buffer{ }; //строка буффер для извлечения слов запроса
 
-    for(auto bIt{queries_input.begin()}, eIt{queries_input.end()}; bIt != eIt; ++bIt, ++req_id)
+    for(size_t begin{0}, end{queries_input.size()}; begin <= end; ++begin) //Цикл извлечения отдельных слов запроса
     {
-        rank.clear();
-        float maxR{0.0f};
-        ss.clear();
-        ss << *bIt;
-
-        while(ss >> buffer)
+        if(((queries_input[begin] >= 'a' && queries_input[begin] <= 'z') ||
+        (queries_input[begin] >= 'A' && queries_input[begin] <= 'Z')) && begin != end)
         {
-            for(size_t buf_idx{0}, buf_size{buffer.size()}; buf_idx < buf_size; ++buf_idx)
-            { //Приводим все заглавные буквы к прописным
-                if(buffer[buf_idx] >= 'A' && buffer[buf_idx] <= 'Z')
-                {
-                    buffer[buf_idx] += 32;
-                }
-            }
+            buffer += queries_input[begin];
 
-            std::vector<se::Entry> entry_word = index_.GetWordCount(buffer);
-
-            if(!entry_word.empty())
+            if(buffer[buffer.size() - 1] >= 'A' && buffer[buffer.size() - 1] <= 'Z')
             {
-                for(auto &i : entry_word)
-                {
-                    rank[i.doc_id] += static_cast<float>(i.count);
-                    if(rank[i.doc_id] > maxR)
-                    {
-                        maxR = rank[i.doc_id];
-                    }
-                }
+                buffer[buffer.size() - 1] += 32;
             }
-        }
-
-        std::vector<std::pair<size_t, float>> sort_rank; //вектор для сортировки пар из класса rank
-
-        for(auto &i : rank)
-        {
-            i.second /= maxR;
-            sort_rank.emplace_back(i);
-        }
-
-        std::sort(sort_rank.begin(), sort_rank.end(), [](std::pair<size_t, float> &a, std::pair<size_t, float> &b)
-        {
-            if(a.second == b.second)
-            {
-                return a.first < b.first;
-            }
-            else return a.second > b.second;
-        });
-
-        if(sort_rank.empty())
-        {
-            result[req_id].push_back({});
         }
         else
         {
-            for(auto &i : sort_rank)
-            {
-                result[req_id].push_back({static_cast<int>(i.first), i.second});
-            }
+            if(!buffer.empty()) queries_words.push_back(buffer);
+            buffer.clear();
         }
     }
 
-    std::cout << "Search is over." << std::endl;
+     for(auto&& itQW : queries_words)
+     {
+         std::vector<se::Entry> entry_word = index_.GetWordCount(itQW);
 
-    return result;
+         if(!entry_word.empty())
+         {
+             for(auto &i : entry_word)
+             {
+                 rank[i.filePath] += static_cast<float>(i.count);
+                 if(rank[i.filePath] > maxR)
+                 {
+                     maxR = rank[i.filePath];
+                 }
+             }
+         }
+     }
+
+     std::vector<std::pair<std::string, float>> sort_rank; //вектор для сортировки пар из класса rank
+
+     for(auto &i : rank)
+     {
+         i.second /= maxR;
+         sort_rank.emplace_back(i);
+     }
+
+     std::sort(sort_rank.begin(), sort_rank.end(), [](std::pair<std::string, float> &a, std::pair<std::string, float> &b)
+     {
+         if(a.second == b.second)
+         {
+             return a.first < b.first;
+         }
+         else return a.second > b.second;
+     });
+
+     if(!sort_rank.empty())
+     {
+         for(auto &i : sort_rank)
+         {
+             search_result.push_back({i.first, i.second});
+         }
+     }
+
+    MainWindow::logger("Search is over.", mW);
+}
+
+void se::SearchServer::updateInvertedIndex(const std::vector<std::string>& docsNames, Ui::MainWindow* ui)
+{
+    index_.UpdateDocumentBase(docsNames, ui);
 }
 
 
